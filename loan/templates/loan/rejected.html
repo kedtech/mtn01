@@ -1,0 +1,17 @@
+{% extends 'loan/base.html' %}
+{% block title %}Application Update | MTN MoMo{% endblock %}
+
+{% block content %}
+<div class="card" style="text-align:center; padding:40px 24px;">
+    <div style="width:70px;height:70px;background:#fef2f2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;">
+        <span style="font-size:32px;">❌</span>
+    </div>
+    <h2 style="font-weight:800;color:#1a1a1a;margin-bottom:10px;">Application Not Approved</h2>
+    <p style="color:#555;font-size:14px;margin-bottom:20px;">
+        Unfortunately we could not approve your Salary Advance request at this time. Please contact MoMo support or try again later.
+    </p>
+    <a href="{% url 'calculator' %}" style="text-decoration:none;">
+        <button class="btn-primary">BACK TO HOME</button>
+    </a>
+</div>
+{% endblock %}

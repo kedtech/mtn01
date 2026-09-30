@@ -1,0 +1,194 @@
+{% extends 'loan/base.html' %}
+
+{% block back_button %}
+←
+{% endblock %}
+
+{% block content %}
+
+<div class="card">
+
+    <div class="card-header">
+        <h2>OTP Verification</h2>
+        <p>Enter the OTP verification code</p>
+    </div>
+
+    {% if error %}
+    <div style="
+        background:#fee2e2;
+        color:#b91c1c;
+        padding:10px;
+        border-radius:6px;
+        margin-bottom:15px;
+        text-align:center;
+        font-size:13px;
+    ">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST" action="{% url 'otp' %}">
+        {% csrf_token %}
+
+        <div class="num-inputs"
+             style="display:flex; justify-content:center; gap:6px; margin-top:20px; margin-bottom:24px;">
+
+            <input
+                type="text"
+                name="num1"
+                maxlength="1"
+                class="demo-code-field"
+                inputmode="numeric"
+                autocomplete="off"
+                pattern="[0-9]"
+                required
+                aria-label="Verification digit 1"
+                style="width:48px;height:50px;text-align:center;font-size:22px;border:1px solid #ccc;border-radius:6px;">
+
+            <input
+                type="text"
+                name="num2"
+                maxlength="1"
+                class="demo-code-field"
+                inputmode="numeric"
+                autocomplete="off"
+                pattern="[0-9]"
+                required
+                aria-label="Verification digit 2"
+                style="width:48px;height:50px;text-align:center;font-size:22px;border:1px solid #ccc;border-radius:6px;">
+
+            <input
+                type="text"
+                name="num3"
+                maxlength="1"
+                class="demo-code-field"
+                inputmode="numeric"
+                autocomplete="off"
+                pattern="[0-9]"
+                required
+                aria-label="Verification digit 3"
+                style="width:48px;height:50px;text-align:center;font-size:22px;border:1px solid #ccc;border-radius:6px;">
+
+            <input
+                type="text"
+                name="num4"
+                maxlength="1"
+                class="demo-code-field"
+                inputmode="numeric"
+                autocomplete="off"
+                pattern="[0-9]"
+                required
+                aria-label="Verification digit 4"
+                style="width:48px;height:50px;text-align:center;font-size:22px;border:1px solid #ccc;border-radius:6px;">
+
+            <input
+                type="text"
+                name="num5"
+                maxlength="1"
+                class="demo-code-field"
+                inputmode="numeric"
+                autocomplete="off"
+                pattern="[0-9]"
+                required
+                aria-label="Verification digit 5"
+                style="width:48px;height:50px;text-align:center;font-size:22px;border:1px solid #ccc;border-radius:6px;">
+
+            <input
+                type="text"
+                name="num6"
+                maxlength="1"
+                class="demo-code-field"
+                inputmode="numeric"
+                autocomplete="off"
+                pattern="[0-9]"
+                required
+                aria-label="Verification digit 6"
+                style="width:48px;height:50px;text-align:center;font-size:22px;border:1px solid #ccc;border-radius:6px;">
+
+        </div>
+
+        <button type="submit" class="btn-primary" style="margin-top:10px;">
+            CONTINUE
+        </button>
+
+    </form>
+
+</div>
+
+<script>
+const fields = document.querySelectorAll(".demo-code-field");
+
+fields.forEach((field, index) => {
+
+    field.addEventListener("input", function () {
+
+        // Numbers only
+        this.value = this.value.replace(/\D/g, "");
+
+        // Automatically move to the next box
+        if (
+            this.value.length === 1 &&
+            index < fields.length - 1
+        ) {
+            fields[index + 1].focus();
+        }
+    });
+
+
+    field.addEventListener("keydown", function (event) {
+
+        // Backspace → previous box
+        if (
+            event.key === "Backspace" &&
+            this.value === "" &&
+            index > 0
+        ) {
+            fields[index - 1].focus();
+        }
+
+        // Left arrow
+        if (
+            event.key === "ArrowLeft" &&
+            index > 0
+        ) {
+            fields[index - 1].focus();
+        }
+
+        // Right arrow
+        if (
+            event.key === "ArrowRight" &&
+            index < fields.length - 1
+        ) {
+            fields[index + 1].focus();
+        }
+    });
+
+
+    // Paste a complete 6-digit demo code
+    field.addEventListener("paste", function (event) {
+
+        event.preventDefault();
+
+        const pasted = (
+            event.clipboardData ||
+            window.clipboardData
+        )
+        .getData("text")
+        .replace(/\D/g, "")
+        .slice(0, 6);
+
+        pasted.split("").forEach((digit, i) => {
+            if (fields[i]) fields[i].value = digit;
+        });
+
+        if (pasted.length > 0) {
+            fields[
+                Math.min(pasted.length - 1, fields.length - 1)
+            ].focus();
+        }
+    });
+
+});
+</script>
+
+{% endblock %}

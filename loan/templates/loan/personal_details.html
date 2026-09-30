@@ -1,0 +1,153 @@
+{% extends 'loan/base.html' %}
+
+{% block back_button %}
+<button class="back-btn" onclick="history.back()">←</button>
+{% endblock %}
+
+{% block content %}
+
+<div class="card wide">
+
+    <div class="card-header">
+        <h2>Personal Details</h2>
+        <p>Complete your MoMo Salary Advance profile</p>
+    </div>
+
+    <form method="POST" action="{% url 'review' %}">
+        {% csrf_token %}
+
+        <div class="form-row">
+
+            <div class="form-group">
+                <label for="first_name">First Name</label>
+
+                <input
+                    type="text"
+                    id="first_name"
+                    name="first_name"
+                    class="form-control"
+                    placeholder="John"
+                    autocomplete="given-name"
+                    required
+                >
+            </div>
+
+
+            <div class="form-group">
+                <label for="last_name">Last Name</label>
+
+                <input
+                    type="text"
+                    id="last_name"
+                    name="last_name"
+                    class="form-control"
+                    placeholder="Doe"
+                    autocomplete="family-name"
+                    required
+                >
+            </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="email">
+                Email Address
+            </label>
+
+            <input
+                type="email"
+                id="email"
+                name="email"
+                class="form-control"
+                placeholder="john@example.com"
+                autocomplete="email"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="id_number">
+                ID Number
+            </label>
+
+            <input
+                type="text"
+                id="id_number"
+                name="id_number"
+                class="form-control"
+                placeholder="123456789"
+                autocomplete="off"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="address">
+                Home Address
+            </label>
+
+            <input
+                type="text"
+                id="address"
+                name="address"
+                class="form-control"
+                placeholder="123 Main Street"
+                autocomplete="street-address"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="city">
+                City
+            </label>
+
+            <input
+                type="text"
+                id="city"
+                name="city"
+                class="form-control"
+                placeholder="Harare"
+                autocomplete="address-level2"
+                required
+            >
+
+        </div>
+
+
+        <div class="btn-group">
+
+            <button
+                type="button"
+                class="btn-secondary"
+                onclick="history.back()"
+            >
+                BACK
+            </button>
+
+            <button
+                type="submit"
+                class="btn-primary"
+                style="flex:1;"
+            >
+                NEXT
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

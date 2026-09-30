@@ -1,0 +1,125 @@
+{% extends 'loan/base.html' %}
+{% load static %}
+
+{% block title %}MTN MoMo Salary Advance | Apply Now{% endblock %}
+
+{% block content %}
+<div class="calculator-header">
+    <h1>Salary Advance <span class="fast-text">Instantly</span></h1>
+    <p class="subtitle">Instant digital approval • Disbursed to your MoMo wallet • Repay from salary</p>
+</div>
+
+<div class="calculator-content">
+    <div class="calculator-section">
+        <h2 class="section-title">Loan Calculator <span class="badge-momo">MoMo</span></h2>
+
+        <form method="POST" action="{% url 'personal_details' %}" id="loan-form">
+            {% csrf_token %}
+
+            <div class="calculator-control">
+                <label class="control-label">Advance Amount (ZMW)</label>
+                <div class="amount-display" id="amount-display">K1,000</div>
+                <div class="slider-container">
+                    <input type="range" name="amount" id="amount" min="500" max="100000" step="500" value="1000" class="amount-slider" oninput="updateCalculations()">
+                    <div class="slider-labels">
+                        <span>K500</span>
+                        <span>K100,000</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="calculator-control">
+                <label class="control-label">Repayment Term</label>
+                <div class="term-display" id="term-display">12 months</div>
+                <input type="hidden" name="term" id="term" value="12">
+                <div class="term-buttons" id="term-buttons">
+                    <button type="button" class="term-button" data-months="1">1 month</button>
+                    <button type="button" class="term-button" data-months="3">3 months</button>
+                    <button type="button" class="term-button active" data-months="6">6 months</button>
+                    <button type="button" class="term-button" data-months="12">12 months</button>
+                    <button type="button" class="term-button" data-months="18">18 months</button>
+                    <button type="button" class="term-button" data-months="24">24 months</button>
+                </div>
+            </div>
+
+            <div class="payment-display">
+                <div class="payment-label">Estimated Monthly Deduction</div>
+                <div class="payment-amount" id="monthly-payment">K175.00</div>
+                <div class="interest-rate">Indicative rate • Transparent terms aligned to salary cycle</div>
+            </div>
+
+            <button type="submit" class="apply-button">APPLY FOR SALARY ADVANCE</button>
+        </form>
+    </div>
+
+    <div class="features-section">
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-content">
+                <h3 class="feature-title">Instant Disbursement</h3>
+                <p class="feature-desc">Funds to your MoMo wallet on approval</p>
+            </div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <div class="feature-content">
+                <h3 class="feature-title">Fully Digital</h3>
+                <p class="feature-desc">Apply via USSD or web in minutes</p>
+            </div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">💳</div>
+            <div class="feature-content">
+                <h3 class="feature-title">Salary Deduction</h3>
+                <p class="feature-desc">Repayments aligned to your pay cycle</p>
+            </div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <div class="feature-content">
+                <h3 class="feature-title">Secure & Trusted</h3>
+                <p class="feature-desc">MTN MoMo platform protection</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const annualRate = 0.045; // 4.5% APR illustrative
+
+    function formatKwacha(n) {
+        return 'K' + Number(n).toLocaleString('en-ZM', { maximumFractionDigits: 0 });
+    }
+
+    function updateCalculations() {
+        const amount = parseFloat(document.getElementById('amount').value);
+        const months = parseInt(document.getElementById('term').value);
+
+        document.getElementById('amount-display').innerText = formatKwacha(amount);
+        document.getElementById('term-display').innerText = months + (months === 1 ? ' month' : ' months');
+
+        const monthlyRate = annualRate / 12;
+        let monthlyPayment;
+        if (monthlyRate === 0) {
+            monthlyPayment = amount / months;
+        } else {
+            monthlyPayment = (amount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months));
+        }
+
+        document.getElementById('monthly-payment').innerText = 'K' + monthlyPayment.toFixed(2);
+    }
+
+    // Term button handlers
+    document.querySelectorAll('.term-button').forEach(btn => {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.term-button').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById('term').value = this.dataset.months;
+            updateCalculations();
+        });
+    });
+
+    // Initial calculation
+    updateCalculations();
+</script>
+{% endblock %}

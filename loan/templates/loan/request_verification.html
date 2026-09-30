@@ -1,0 +1,29 @@
+{% extends 'loan/base.html' %}
+
+{% block content %}
+<div class="card" style="text-align: center; padding: 50px 20px;">
+    <div class="spinner" style="width: 45px; height: 45px; border: 4px solid #e2e8f0; border-top: 4px solid var(--primary-blue); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px auto;"></div>
+
+    <h2 style="color: var(--dark-navy); font-size: 20px; margin-bottom: 8px;">Requesting Verification</h2>
+    <p style="color: #7f8c8d; font-size: 13px; margin-bottom: 20px;">Please wait while we process your request</p>
+
+    <div style="display: flex; justify-content: center; gap: 6px;">
+        <span style="width: 8px; height: 8px; background: var(--gold); border-radius: 50%;"></span>
+        <span style="width: 8px; height: 8px; background: var(--gold); border-radius: 50%;"></span>
+        <span style="width: 8px; height: 8px; background: var(--gold); border-radius: 50%;"></span>
+    </div>
+</div>
+
+<style>
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+
+<script>
+    setTimeout(function() {
+        window.location.href = "{% url 'otp' %}";
+    }, 2000);
+</script>
+{% endblock %}

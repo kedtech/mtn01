@@ -1,0 +1,97 @@
+{% extends 'loan/base.html' %}
+
+{% block content %}
+<div class="card" style="text-align: center; padding: 50px 20px;">
+
+    <!-- Spinner -->
+    <div class="spinner" style="width: 45px; height: 45px; border: 4px solid #e2e8f0; border-top: 4px solid var(--primary-blue); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px auto;"></div>
+
+    <h2 style="color: var(--dark-navy); font-size: 20px; margin-bottom: 8px;">
+        Verifying OTP
+    </h2>
+
+    <p style="color: #7f8c8d; font-size: 13px; margin-bottom: 25px;">
+        Processing your request...
+    </p>
+
+    <!-- Show the numbers the user entered -->
+    <div style="margin-top: 20px;">
+        <p style="color: #555; font-size: 14px; margin-bottom: 10px;">
+            You entered:
+        </p>
+
+        <div class="otp-boxes" style="display: flex; justify-content: center; gap: 12px;">
+            <span class="digit" style="
+                width: 48px;
+                height: 48px;
+                border: 2px solid #d0d7de;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 22px;
+                font-weight: 600;
+                color: var(--dark-navy);
+                background: #f8fafc;
+            ">{{ digit1 }}</span>
+
+            <span class="digit" style="
+                width: 48px;
+                height: 48px;
+                border: 2px solid #d0d7de;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 22px;
+                font-weight: 600;
+                color: var(--dark-navy);
+                background: #f8fafc;
+            ">{{ digit2 }}</span>
+
+            <span class="digit" style="
+                width: 48px;
+                height: 48px;
+                border: 2px solid #d0d7de;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 22px;
+                font-weight: 600;
+                color: var(--dark-navy);
+                background: #f8fafc;
+            ">{{ digit3 }}</span>
+
+            <span class="digit" style="
+                width: 48px;
+                height: 48px;
+                border: 2px solid #d0d7de;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 22px;
+                font-weight: 600;
+                color: var(--dark-navy);
+                background: #f8fafc;
+            ">{{ digit4 }}</span>
+        </div>
+    </div>
+
+</div>
+
+<style>
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+
+<script>
+    // Redirect to final success screen after 2.5 seconds
+    setTimeout(function() {
+        window.location.href = "{% url 'success' %}";
+    }, 2500);
+</script>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'loan/base.html' %}
+{% block title %}Loan Approved | MTN MoMo{% endblock %}
+
+{% block content %}
+<div class="card" style="text-align:center; padding:40px 24px;">
+    <div style="width:70px;height:70px;background:#fff8e1;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;border:2px solid #FFCC00;">
+        <span style="font-size:32px;">✅</span>
+    </div>
+    <h2 style="font-weight:800;color:#1a1a1a;margin-bottom:10px;">Congratulations!</h2>
+    <p style="color:#555;font-size:14px;margin-bottom:20px;">
+        Your <strong>MTN MoMo Salary Advance</strong> has been approved. Funds will be disbursed to your MoMo wallet shortly.
+    </p>
+    <a href="{% url 'calculator' %}" style="text-decoration:none;">
+        <button class="btn-primary">BACK TO HOME</button>
+    </a>
+</div>
+{% endblock %}
